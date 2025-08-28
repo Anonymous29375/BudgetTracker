@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report - {{ filename }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Report for {{ filename }}</h1>
+    <p><b>Total Income:</b> ${{ "%.2f"|format(income) }}</p>
+    <p><b>Total Expenses:</b> ${{ "%.2f"|format(expense) }}</p>
+    <p><b>Net Position:</b> ${{ "%.2f"|format(net) }}</p>
+
+    <h2>Spending by Category</h2>
+    <img src="data:image/png;base64,{{ graph }}" alt="Spending Chart">
+
+    <h2>Transactions</h2>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Type</th>
+            <th>Details</th>
+            <th>Category</th>
+            <th>Merchant</th>
+        </tr>
+        {% for row in table %}
+        <tr>
+            <td>{{ row.date.strftime("%Y-%m-%d") }}</td>
+            <td>{{ "%.2f"|format(row.amount) }}</td>
+            <td>{{ row["transaction type"] }}</td>
+            <td>{{ row["transaction details"] }}</td>
+            <td>{{ row.category }}</td>
+            <td>{{ row["merchant name"] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p><a href="/">Back</a></p>
+</body>
+</html>
