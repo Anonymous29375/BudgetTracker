@@ -11,7 +11,6 @@ from flask import Flask, render_template, request, abort
 
 app = Flask(__name__)
 
-# Transactions folder (instead of "data")
 DATA_DIR = os.path.join(os.path.dirname(__file__), "transactions")
 
 EXPECTED_COLS = ["date", "amount", "transaction type", "transaction details", "category", "merchant name"]
