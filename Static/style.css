@@ -2,38 +2,53 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 40px;
-    background: white;
+    background: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* centers everything horizontally */
+}
+
+h1, h2, p {
+    color: #333;
+    margin-bottom: 20px;
     text-align: center;
 }
 
-h1, h2 {
-    color: black;
-    margin-bottom: 20px;
+/* --- Home page dropdown + button --- */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* center horizontally */
+    justify-content: center;
+    gap: 12px;
+    margin: 20px 0;
 }
 
-form {
-    margin: 20px;
+select, button {
+    padding: 10px 14px;
+    font-size: 16px;
+}
+
+/* --- Center the transactions table --- */
+table {
+    margin: 20px auto;
     border-collapse: collapse;
     width: 80%;
     text-align: center;
 }
-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-top: 20px;
-}
 
 table, th, td {
-    border: 1px solid black;
+    border: 1px solid #aaa;
     padding: 8px;
 }
 
 th {
-    background: white;
+    background: #eee;
 }
 
+/* --- Center the graph --- */
 img {
     display: block;
-    margin: 20px;
-    max-width: 90%;
+    margin: 20px auto;
+    max-width: 80%;
 }

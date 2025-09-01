@@ -11,6 +11,7 @@ from flask import Flask, render_template, request, abort
 
 app = Flask(__name__)
 
+# Transactions folder
 DATA_DIR = os.path.join(os.path.dirname(__file__), "transactions")
 
 EXPECTED_COLS = ["date", "amount", "transaction type", "transaction details", "category", "merchant name"]
@@ -51,11 +52,11 @@ def generate_chart(df):
         ax.text(0.5, 0.5, "No expenses", ha="center", va="center")
         ax.axis("off")
     else:
-        cat = expenses.groupby("category")["amount"].sum().abs().sort_values(ascending=False)
+        # Keep negative amounts so money spent shows downward bars
+        cat = expenses.groupby("category")["amount"].sum().sort_values()
         fig, ax = plt.subplots(figsize=(8, 4))
-        cat.plot(kind="bar", ax=ax)
-        ax.set_title("Spending by Category")
-        ax.set_ylabel("Amount")
+        cat.plot(kind="bar", ax=ax, color="tomato")
+        ax.set_ylabel("Amount ($)")
         plt.xticks(rotation=45, ha="right")
 
     buf = io.BytesIO()
