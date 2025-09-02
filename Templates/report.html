@@ -1,39 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Report - {{ filename }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Report for {{ filename }}</h1>
-    <p><b>Total Income:</b> ${{ "%.2f"|format(income) }}</p>
-    <p><b>Total Expenses:</b> ${{ "%.2f"|format(expense) }}</p>
-    <p><b>Net Position:</b> ${{ "%.2f"|format(net) }}</p>
+    <div class="container">
+        <h1>Report for {{ filename }}</h1>
 
-    <img src="data:image/png;base64,{{ graph }}" alt="Transactions Graph">
+        <p><strong>Total Income:</strong> ${{ "{:.2f}".format(income) }}</p>
+        <p><strong>Total Expenses:</strong> ${{ "{:.2f}".format(expense) }}</p>
+        <p><strong>Net Position:</strong> ${{ "{:.2f}".format(net) }}</p>
 
-    <h2>Transactions</h2>
-    <table>
-        <tr>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Type</th>
-            <th>Details</th>
-            <th>Category</th>
-            <th>Merchant</th>
-        </tr>
-        {% for row in table %}
-        <tr>
-            <td>{{ row.date.strftime("%Y-%m-%d") }}</td>
-            <td>{{ "%.2f"|format(row.amount) }}</td>
-            <td>{{ row["transaction type"] }}</td>
-            <td>{{ row["transaction details"] }}</td>
-            <td>{{ row.category }}</td>
-            <td>{{ row["merchant name"] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+        <img src="data:image/png;base64,{{ graph }}" alt="Category Chart">
 
-    <p><a href="/">Back</a></p>
+        <!-- Spending Category Section -->
+        <div class="spending-category-container">
+            <h2>Total Spent per Category</h2>
+            <ul class="spending-list">
+                {% for category, total in spent_per_category.items() %}
+                    <li>{{ category }}: ${{ "{:.2f}".format(total) }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <h2>Transactions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Transaction Type</th>
+                    <th>Transaction Details</th>
+                    <th>Category</th>
+                    <th>Merchant Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in table %}
+                <tr>
+                    <td>{% if row.date %}{{ row.date.strftime("%d/%m/%Y") }}{% else %}{{ row.date }}{% endif %}</td>
+                    <td>${{ "{:.2f}".format(row.amount) if row.amount is not none else "" }}</td>
+                    <td>{{ row["transaction type"] }}</td>
+                    <td>{{ row["transaction details"] }}</td>
+                    <td>{{ row.category }}</td>
+                    <td>{{ row["merchant name"] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+    </div>
 </body>
 </html>

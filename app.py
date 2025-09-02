@@ -2,7 +2,6 @@ import os
 import io
 import base64
 import pandas as pd
-import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -33,12 +32,27 @@ def load_csv(filename):
     if missing:
         abort(400, f"Missing columns: {missing}")
 
-    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    # Try to parse dates flexibly, but keep invalid ones as strings instead of dropping
+    try:
+        df["date"] = pd.to_datetime(df["date"], errors="coerce", dayfirst=True)
+    except Exception:
+        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+
+    # Convert amount column
     df["amount"] = pd.to_numeric(df["amount"], errors="coerce")
+
+    # Fill text fields
     df["category"] = df["category"].fillna("Uncategorized").astype(str)
     df["transaction type"] = df["transaction type"].fillna("").astype(str)
-    df = df.dropna(subset=["date", "amount"])
-    return df
+    df["transaction details"] = df["transaction details"].fillna("").astype(str)
+    df["merchant name"] = df["merchant name"].fillna("").astype(str)
+
+    # Keep rows even if date or amount failed, but sort by date where possible
+    df_sorted = df.copy()
+    df_sorted["date_sort"] = pd.to_datetime(df_sorted["date"], errors="coerce")
+    df_sorted = df_sorted.sort_values(by="date_sort", ascending=True).drop(columns=["date_sort"])
+
+    return df_sorted
 
 def classify_transactions(df):
     df["is_income"] = df["amount"] > 0
@@ -46,18 +60,14 @@ def classify_transactions(df):
     return df
 
 def generate_chart(df):
-    expenses = df[df["is_expense"]]
-    if expenses.empty:
-        fig, ax = plt.subplots(figsize=(6, 3))
-        ax.text(0.5, 0.5, "No expenses", ha="center", va="center")
-        ax.axis("off")
-    else:
-        # Keep negative amounts so money spent shows downward bars
-        cat = expenses.groupby("category")["amount"].sum().sort_values()
-        fig, ax = plt.subplots(figsize=(8, 4))
-        cat.plot(kind="bar", ax=ax, color="tomato")
-        ax.set_ylabel("Amount ($)")
-        plt.xticks(rotation=45, ha="right")
+    # Group by category, sum amounts (income positive, expenses negative)
+    category_sums = df.groupby("category")["amount"].sum().sort_values()
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    category_sums.plot(kind="bar", ax=ax, color=["green" if v > 0 else "tomato" for v in category_sums])
+    ax.set_ylabel("Amount ($)")
+    ax.set_xlabel("Category")
+    plt.xticks(rotation=45, ha="right")
 
     buf = io.BytesIO()
     plt.tight_layout()
@@ -65,7 +75,7 @@ def generate_chart(df):
     buf.seek(0)
     img = base64.b64encode(buf.getvalue()).decode("utf-8")
     plt.close(fig)
-    return img
+    return img, category_sums
 
 @app.route("/")
 def home():
@@ -85,7 +95,10 @@ def report():
     total_expense = df[df["is_expense"]]["amount"].sum()
     net = total_income + total_expense
 
-    chart = generate_chart(df)
+    chart, category_totals = generate_chart(df)
+
+    # Only include categories where money was spent (negative sums)
+    spent_per_category = category_totals[category_totals < 0].sort_values()
 
     return render_template(
         "report.html",
@@ -95,6 +108,7 @@ def report():
         net=net,
         graph=chart,
         table=df.to_dict(orient="records"),
+        spent_per_category=spent_per_category.to_dict()
     )
 
 if __name__ == "__main__":
