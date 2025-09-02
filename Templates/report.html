@@ -1,57 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Report - {{ filename }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h1>Report for {{ filename }}</h1>
+<!DOCTYPE html>  
+<!-- Declares this document as HTML5 -->
 
-        <p><strong>Total Income:</strong> ${{ "{:.2f}".format(income) }}</p>
-        <p><strong>Total Expenses:</strong> ${{ "{:.2f}".format(expense) }}</p>
-        <p><strong>Net Position:</strong> ${{ "{:.2f}".format(net) }}</p>
+<html lang="en">  
+<!-- Root element, language is set to English -->
 
-        <img src="data:image/png;base64,{{ graph }}" alt="Category Chart">
+<head>  
+    <!-- Head section: contains metadata and links -->
+    <meta charset="UTF-8">  
+    <!-- Defines character encoding as UTF-8 (supports special characters) -->
+
+    <title>Report - {{ filename }}</title>  
+    <!-- Page title shown in the browser tab. 
+         Jinja inserts the selected CSV filename here. -->
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">  
+    <!-- Link to external CSS file in the static folder (Flask handles URL). -->
+</head>  
+
+<body>  
+    <!-- Page body: everything visible to the user -->
+
+    <div class="container">  
+        <!-- Wrapper div for styling/structure -->
+
+        <h1>Report for {{ filename }}</h1>  
+        <!-- Main heading of the report, includes selected CSV filename -->
+
+        <p><strong>Total Income:</strong> ${{ "{:.2f}".format(income) }}</p>  
+        <!-- Shows total income (formatted to 2 decimal places) -->
+
+        <p><strong>Total Expenses:</strong> ${{ "{:.2f}".format(expense) }}</p>  
+        <!-- Shows total expenses (formatted to 2 decimal places) -->
+
+        <p><strong>Net Position:</strong> ${{ "{:.2f}".format(net) }}</p>  
+        <!-- Shows net balance (income + expenses), formatted to 2 decimal places -->
+
+        <img src="data:image/png;base64,{{ graph }}" alt="Category Chart">  
+        <!-- Embeds the matplotlib chart as a base64-encoded PNG image.
+             No separate image file needed since it's generated dynamically. -->
 
         <!-- Spending Category Section -->
-        <div class="spending-category-container">
-            <h2>Total Spent per Category</h2>
-            <ul class="spending-list">
-                {% for category, total in spent_per_category.items() %}
-                    <li>{{ category }}: ${{ "{:.2f}".format(total) }}</li>
-                {% endfor %}
-            </ul>
-        </div>
+        <div class="spending-category-container">  
+            <!-- Container for spending-by-category breakdown -->
 
-        <h2>Transactions</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Transaction Type</th>
-                    <th>Transaction Details</th>
-                    <th>Category</th>
-                    <th>Merchant Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in table %}
-                <tr>
-                    <td>{% if row.date %}{{ row.date.strftime("%d/%m/%Y") }}{% else %}{{ row.date }}{% endif %}</td>
-                    <td>${{ "{:.2f}".format(row.amount) if row.amount is not none else "" }}</td>
-                    <td>{{ row["transaction type"] }}</td>
-                    <td>{{ row["transaction details"] }}</td>
-                    <td>{{ row.category }}</td>
-                    <td>{{ row["merchant name"] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            <h2>Total Spent per Category</h2>  
+            <!-- Subheading for category spending -->
 
-        <p><a href="{{ url_for('home') }}">Back to Home</a></p>
-    </div>
-</body>
-</html>
+            <ul class="spending-list">  
+                <!-- Unordered list to display category spending -->
+
+                {% for category, total in spent_per_category.items() %}  
+                    <!-- Jinja loop: iterates through dictionary of spent amounts per category -->
+
+                    <li>{{ category }}: ${{ "{:.2f}".format(total) }}</li>  
+                    <!-- Each category and its total spending is displayed as a list item -->
+
+                {% endfor %}  
+                <!-- End of Jinja loop -->
+            </ul>  
+        </div>  
+
+        <h2>Transactions</h2>  
+        <!-- Subheading for detailed transactions table -->
+
+        <table>  
+            <!-- Transactions table starts -->
+            <thead>  
+                <!-- Table header -->
+                <tr>  
+                    <!-- Table header row -->
+                    <th>Date</th>  
+                    <th>Amount</th>  
+                    <th>Transaction Type</th>  
+                    <th>Transaction Details</th>  
+                    <th>Category</th>  
+                    <th>Merchant Name</th>  
+                </tr>  
+            </thead>  
+
+            <tbody>  
+                <!-- Table body with transaction rows -->
+
+                {% for row in table %}  
+                <!-- Jinja loop: iterates through each transaction row from DataFrame -->
+
+                <tr>  
+                    <!-- Table row for a single transaction -->
+
+                    <td>{% if row.date %}{{ row.date.strftime("%d/%m/%Y") }}{% else %}{{ row.date }}{% endif %}</td>  
+                    <!-- Displays transaction date.
+                         If valid date exists, formats as dd/mm/yyyy.
+                         Otherwise, shows the raw value. -->
+
+                    <td>${{ "{:.2f}".format(row.amount) if row.amount is not none else "" }}</td>  
+                    <!-- Displays transaction amount formatted to 2 decimals.
+                         If no amount, shows empty string. -->
+
+                    <td>{{ row["transaction type"] }}</td>  
+                    <!-- Displays transaction type column -->
+
+                    <td>{{ row["transaction details"] }}</td>  
+                    <!-- Displays transaction details column -->
+
+                    <td>{{ row.category }}</td>  
+                    <!-- Displays transaction category -->
+
+                    <td>{{ row["merchant name"] }}</td>  
+                    <!-- Displays merchant name -->
+                </tr>  
+
+                {% endfor %}  
+                <!-- End of Jinja loop for transactions -->
+            </tbody>  
+        </table>  
+
+        <p><a href="{{ url_for('home') }}">Back to Home</a></p>  
+        <!-- Link back to home page using Flask url_for() -->
+    </div>  
+</body>  
+
+</html>  
+<!-- End of HTML document -->
