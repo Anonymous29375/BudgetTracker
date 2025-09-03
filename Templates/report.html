@@ -31,9 +31,7 @@
             <ul class="spending-list">  
 
                 {% for category, total in spent_per_category.items() %}   <!-- Iterates through dictionary of spent amounts per category -->
-
                     <li>{{ category }}: ${{ "{:.2f}".format(total) }}</li>   <!-- Each category and its total spending is displayed as a list item -->
-
                 {% endfor %}  
             </ul>  
         </div>  
