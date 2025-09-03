@@ -1,49 +1,28 @@
 <!DOCTYPE html>  
-<!-- Declares the document type as HTML5 -->
 
 <html>  
-<!-- Root element of the HTML page -->
 
 <head>  
-    <!-- Head section contains metadata and resources -->
     <title>Budget Tracker</title>  
-    <!-- Title of the page (shown in browser tab) -->
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">  
-    <!-- Link to external CSS stylesheet.
-         Uses Flask's url_for() to dynamically generate the path to 'static/style.css'. -->
 </head>  
 
 <body>  
-    <!-- Body section: contains all visible page content -->
 
     <h1>Select a Transactions File</h1>  
-    <!-- Main heading of the page -->
 
-    <form action="/report" method="get">  
-        <!-- Form that sends data to the '/report' route using GET method.
-             When submitted, it will append ?file=filename to the URL. -->
+    <form action="/report" method="get">   <!-- Sends data to the '/report' route using GET -->
 
-        <select name="file">  
-            <!-- Dropdown menu for selecting a CSV file.
-                 'name="file"' sets the query parameter key used in Flask (request.args.get("file")). -->
+        <select name="file">  <!-- Dropdown menu for selecting a CSV file. -->
 
-            {% for f in files %}  
-                <!-- Jinja2 loop: iterates through the list of CSV files passed in from Flask. -->
-
+            {% for f in files %} 
                 <option value="{{ f }}">{{ f }}</option>  
-                <!-- Each file becomes an <option> in the dropdown.
-                     'value' is the filename (used in backend),
-                     inner text also displays the filename to the user. -->
-
             {% endfor %}  
-            <!-- End of Jinja2 for-loop -->
         </select>  
 
-        <button type="submit">View Report</button>  
-        <!-- Submit button: when clicked, form sends the selected file to Flask '/report'. -->
+        <button type="submit">View Report</button>
     </form>  
 </body>  
 
 </html>  
-<!-- End of HTML document -->
