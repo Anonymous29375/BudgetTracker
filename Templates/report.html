@@ -58,13 +58,13 @@
 
                     <td>${{ "{:.2f}".format(row.amount) if row.amount is not none else "" }}</td>  <!-- Displays the transaction amount. If there is no amount, it shows an empty string. -->
 
-                    <td>{{ row["transaction type"] }}</td>  <!-- Displays transaction type column -->
+                    <td>{{ row["transaction type"] }}</td>  
 
-                    <td>{{ row["transaction details"] }}</td>  <!-- Displays transaction details column -->
+                    <td>{{ row["transaction details"] }}</td> 
 
-                    <td>{{ row.category }}</td>   <!-- Displays transaction category -->
+                    <td>{{ row.category }}</td>   
 
-                    <td>{{ row["merchant name"] }}</td>  <!-- Displays merchant name -->
+                    <td>{{ row["merchant name"] }}</td>  
                 </tr>  
 
                 {% endfor %}  
