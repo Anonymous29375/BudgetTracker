@@ -84,13 +84,11 @@ def generate_chart(df):
     plt.close(fig)             
     return img, category_sums       
 
-# Home page
 @app.route("/")
 def home():
     files = list_csv_files()                     
     return render_template("home.html", files=files)  
 
-# Report page 
 @app.route("/report")
 def report():
     filename = request.args.get("file") # Get the selected filename
